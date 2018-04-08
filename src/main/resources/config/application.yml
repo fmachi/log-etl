@@ -7,3 +7,9 @@ rate-calculator:
   engine:
     years: 3
     compounding: 12
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/logdatabase
+    username: logwriter
+    password: logwriter
