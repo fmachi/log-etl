@@ -5,7 +5,7 @@ import com.etl.logs.access.analyzer.adapter.ui.CLIInputParametersParser;
 import com.etl.logs.access.analyzer.adapter.persistence.accesslog.JdbcTemplateLogAccessRepository;
 import com.etl.logs.access.analyzer.adapter.io.BufferedReaderLogLinesSource;
 import com.etl.logs.access.analyzer.adapter.persistence.blacklisting.JdbcTemplateBlacklistingRepository;
-import com.etl.logs.access.analyzer.domain.accesslog.ExceedingTrafficIp;
+import com.etl.logs.access.analyzer.domain.blacklisting.ExceedingTrafficIp;
 import com.etl.logs.access.analyzer.domain.blacklisting.BlacklistChecker;
 import com.etl.logs.access.analyzer.domain.blacklisting.BlacklistedIp;
 import com.etl.logs.access.analyzer.domain.blacklisting.ExceedingTrafficMessageFormatter;

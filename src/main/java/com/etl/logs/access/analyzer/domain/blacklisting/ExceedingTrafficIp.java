@@ -1,4 +1,4 @@
-package com.etl.logs.access.analyzer.domain.accesslog;
+package com.etl.logs.access.analyzer.domain.blacklisting;
 
 import lombok.Builder;
 import lombok.Getter;

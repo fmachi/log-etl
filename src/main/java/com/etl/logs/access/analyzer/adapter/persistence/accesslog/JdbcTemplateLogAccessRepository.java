@@ -1,7 +1,7 @@
 package com.etl.logs.access.analyzer.adapter.persistence.accesslog;
 
 import com.etl.logs.access.analyzer.domain.accesslog.Access;
-import com.etl.logs.access.analyzer.domain.accesslog.ExceedingTrafficIp;
+import com.etl.logs.access.analyzer.domain.blacklisting.ExceedingTrafficIp;
 import com.etl.logs.access.analyzer.port.persistence.accesslog.ExceedingTrafficCriteria;
 import com.etl.logs.access.analyzer.port.persistence.accesslog.LogAccessRepository;
 import lombok.extern.slf4j.Slf4j;

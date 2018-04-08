@@ -1,7 +1,7 @@
 package com.etl.logs.access.analyzer.port.persistence.accesslog;
 
 import com.etl.logs.access.analyzer.domain.accesslog.Access;
-import com.etl.logs.access.analyzer.domain.accesslog.ExceedingTrafficIp;
+import com.etl.logs.access.analyzer.domain.blacklisting.ExceedingTrafficIp;
 
 import java.util.List;
 

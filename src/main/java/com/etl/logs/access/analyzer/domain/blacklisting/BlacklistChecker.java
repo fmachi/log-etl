@@ -1,6 +1,5 @@
 package com.etl.logs.access.analyzer.domain.blacklisting;
 
-import com.etl.logs.access.analyzer.domain.accesslog.ExceedingTrafficIp;
 import com.etl.logs.access.analyzer.domain.ui.InputParameters;
 import com.etl.logs.access.analyzer.port.persistence.accesslog.ExceedingTrafficCriteria;
 import com.etl.logs.access.analyzer.port.persistence.accesslog.LogAccessRepository;
