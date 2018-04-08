@@ -8,5 +8,5 @@ public interface BlacklistingRepository {
 
     void cleanPreviousElaboration();
 
-    void insertBlacklistedIps(List<BlacklistedIp> toBlacklist);
+    int insertBlacklistedIps(List<BlacklistedIp> toBlacklist);
 }

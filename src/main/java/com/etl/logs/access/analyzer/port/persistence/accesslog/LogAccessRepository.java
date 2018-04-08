@@ -9,7 +9,7 @@ public interface LogAccessRepository {
 
     void cleanPreviousElaboration();
 
-    void insertLogRows(List<Access> logLinesBatch);
+    int insertLogRows(List<Access> logLinesBatch);
     
     List<ExceedingTrafficIp> findIpsToBlacklist(ExceedingTrafficCriteria criteria);
 }

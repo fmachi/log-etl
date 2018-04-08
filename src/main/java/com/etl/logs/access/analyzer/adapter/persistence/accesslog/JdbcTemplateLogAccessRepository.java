@@ -7,6 +7,7 @@ import com.etl.logs.access.analyzer.port.persistence.accesslog.LogAccessReposito
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static java.sql.Types.INTEGER;
@@ -40,8 +41,8 @@ public class JdbcTemplateLogAccessRepository implements LogAccessRepository {
     }
 
     @Override
-    public void insertLogRows(List<Access> logLinesBatch) {
-        int[][] ints = jdbcTemplate.batchUpdate(
+    public int insertLogRows(List<Access> logLinesBatch) {
+        int[][] results = jdbcTemplate.batchUpdate(
                 INSERT_LOG_ACCESS_ROWS_BATCH,
                 logLinesBatch,
                 logLinesBatch.size(),
@@ -54,6 +55,8 @@ public class JdbcTemplateLogAccessRepository implements LogAccessRepository {
                     preparedStatement.setString(index++, access.getUserAgent());
                 }
         );
+
+        return Arrays.stream(results[0]).sum();
     }
 
     @Override

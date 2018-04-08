@@ -111,10 +111,10 @@ public class AccessLogFeeder {
     }
 
     void handleBatch(List<Access> rows) {
-        writtenRowsCounter.updateAndGet(a -> a + rows.size());
         long started = System.currentTimeMillis();
-        logAccessRepository.insertLogRows(rows);
-        log.info("Writing {} {} in {}", readLinesCounter.get(), writtenRowsCounter.get(), System.currentTimeMillis() - started);
+        int writtenRows = logAccessRepository.insertLogRows(rows);
+        writtenRowsCounter.updateAndGet(a -> a + writtenRows);
+        log.info("Written {}, total {} of {} in {} ms.",writtenRows,writtenRowsCounter.get(),readLinesCounter.get(), System.currentTimeMillis() - started);
     }
 
     Access extractAccess(String[] tokens) {

@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -33,8 +34,8 @@ public class JdbcTemplateBlacklistingRepository implements BlacklistingRepositor
     }
 
     @Override
-    public void insertBlacklistedIps(List<BlacklistedIp> toBlacklist) {
-        int[][] ints = jdbcTemplate.batchUpdate(
+    public int insertBlacklistedIps(List<BlacklistedIp> toBlacklist) {
+        int[][] results = jdbcTemplate.batchUpdate(
                 INSERT_BLACKLISTED_ROWS,
                 toBlacklist,
                 toBlacklist.size(),
@@ -47,6 +48,8 @@ public class JdbcTemplateBlacklistingRepository implements BlacklistingRepositor
                     preparedStatement.setString(index++, blacklistedIp.getMessage());
                 }
         );
+
+        return Arrays.stream(results[0]).sum();
     }
 
     private Timestamp asTimestamp(LocalDateTime date) {
