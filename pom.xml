@@ -79,7 +79,7 @@
                                 com.etl.logs.access.analyzer.ApplicationLauncher
                             </mainClass>
                             <layout>JAR</layout>
-                            <executable>true</executable>
+                            <executable>false</executable>
                         </configuration>
                     </execution>
                 </executions>
