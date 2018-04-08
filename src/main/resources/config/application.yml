@@ -1,12 +1,8 @@
-logging:
-    level:
-        ROOT: INFO
-    file: ratecalculator.log
-
-rate-calculator:
-  engine:
-    years: 3
-    compounding: 12
+log-etl:
+  pipeline:
+    bufferSize: 100
+    prefetchSize: 10
+    parallelism: 4
 
 spring:
   datasource:

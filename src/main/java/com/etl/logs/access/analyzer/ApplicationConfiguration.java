@@ -5,24 +5,37 @@ import com.etl.logs.access.analyzer.adapter.ui.CLIInputParametersParser;
 import com.etl.logs.access.analyzer.adapter.persistence.accesslog.JdbcTemplateLogAccessRepository;
 import com.etl.logs.access.analyzer.adapter.io.BufferedReaderLogLinesSource;
 import com.etl.logs.access.analyzer.adapter.persistence.blacklisting.JdbcTemplateBlacklistingRepository;
+import com.etl.logs.access.analyzer.domain.accesslog.ExceedingTrafficIp;
 import com.etl.logs.access.analyzer.domain.blacklisting.BlacklistChecker;
 import com.etl.logs.access.analyzer.domain.blacklisting.BlacklistedIp;
+import com.etl.logs.access.analyzer.domain.blacklisting.ExceedingTrafficMessageFormatter;
 import com.etl.logs.access.analyzer.domain.feeder.AccessLogFeeder;
 import com.etl.logs.access.analyzer.domain.feeder.PipelineConfiguration;
 import com.etl.logs.access.analyzer.domain.persistence.DatabaseCleaner;
 import com.etl.logs.access.analyzer.domain.usecase.LogAccessCheckerUseCase;
 import com.etl.logs.access.analyzer.port.io.LogLinesSource;
+import com.etl.logs.access.analyzer.port.persistence.accesslog.ExceedingTrafficCriteria;
 import com.etl.logs.access.analyzer.port.persistence.accesslog.LogAccessRepository;
 import com.etl.logs.access.analyzer.port.persistence.blacklisting.BlacklistingRepository;
 import com.etl.logs.access.analyzer.port.ui.InputParametersParser;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 @Configuration
 public class ApplicationConfiguration {
+
+
+    @Value("${log-etl.pipeline.bufferSize}")
+    private int bufferSize;
+    @Value("${log-etl.pipeline.parallelism}")
+    private int parallelism;
+    @Value("${log-etl.pipeline.prefetchSize}")
+    private int prefetchSize;
 
     @Bean
     public InputParametersParser inputParametersParser() {
@@ -40,17 +53,22 @@ public class ApplicationConfiguration {
     }
 
     @Bean
+    BiFunction<ExceedingTrafficIp, ExceedingTrafficCriteria, String> messageFormatter() {
+        return new ExceedingTrafficMessageFormatter();
+    }
+
+    @Bean
     PipelineConfiguration pipelineConfiguration() {
         return PipelineConfiguration.builder()
-                .bufferSize(100)
-                .parallelism(4)
-                .prefetchSize(10)
+                .bufferSize(bufferSize)
+                .parallelism(parallelism)
+                .prefetchSize(prefetchSize)
                 .build();
     }
 
     @Bean
-    BlacklistChecker blacklistChecker(LogAccessRepository logAccessRepository, BlacklistingRepository blacklistingRepository, Consumer<BlacklistedIp> blacklistedIpPrinter) {
-        return new BlacklistChecker(logAccessRepository, blacklistingRepository, blacklistedIpPrinter);
+    BlacklistChecker blacklistChecker(LogAccessRepository logAccessRepository, BlacklistingRepository blacklistingRepository, Consumer<BlacklistedIp> blacklistedIpPrinter, BiFunction<ExceedingTrafficIp, ExceedingTrafficCriteria, String> messageFormatter) {
+        return new BlacklistChecker(logAccessRepository, blacklistingRepository, blacklistedIpPrinter,messageFormatter);
     }
 
     @Bean
