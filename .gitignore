@@ -26,3 +26,5 @@ hs_err_pid*
 docker/mysql_data
 
 target
+
+docs/*.txt
