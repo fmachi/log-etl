@@ -1,4 +1,4 @@
-package com.etl.logs.access.analyzer.adapter.accesslog;
+package com.etl.logs.access.analyzer.adapter.persistence.accesslog;
 
 import com.etl.logs.access.analyzer.domain.accesslog.Access;
 import com.etl.logs.access.analyzer.domain.accesslog.ExceedingTrafficIp;
@@ -6,12 +6,7 @@ import com.etl.logs.access.analyzer.port.persistence.accesslog.ExceedingTrafficC
 import com.etl.logs.access.analyzer.port.persistence.accesslog.LogAccessRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.ParameterizedPreparedStatementSetter;
-import org.springframework.jdbc.core.RowMapper;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 import static java.sql.Types.INTEGER;
@@ -20,7 +15,7 @@ import static java.sql.Types.TIMESTAMP;
 @Slf4j
 public class JdbcTemplateLogAccessRepository implements LogAccessRepository {
 
-    private static final String INSERT_LOG_ACCESS_ROWS_BATCH = "INSERT INTO `logdatabase`.`ACCESS` " +
+    private static final String INSERT_LOG_ACCESS_ROWS_BATCH = "INSERT INTO `ACCESS` " +
             " (`TIMESTAMP`,`IP_ADDRESS`,`METHOD`,`STATUS`,`USER_AGENT`) " +
             " VALUES (?,?,?,?, ?);";
     ;
@@ -30,6 +25,8 @@ public class JdbcTemplateLogAccessRepository implements LogAccessRepository {
                     " group by IP_ADDRESS having NUMBER_OF_ACCESS>? "+
                     " order by NUMBER_OF_ACCESS desc";
 
+    public static final String DELETE_ACCESS_ROWS = "DELETE from ACCESS";
+
     final JdbcTemplate jdbcTemplate;
 
     public JdbcTemplateLogAccessRepository(JdbcTemplate jdbcTemplate) {
@@ -37,8 +34,8 @@ public class JdbcTemplateLogAccessRepository implements LogAccessRepository {
     }
 
     @Override
-    public void clearPreviousElaboration() {
-        int numberOfDeletedRows = jdbcTemplate.update("DELETE from ACCESS");
+    public void cleanPreviousElaboration() {
+        int numberOfDeletedRows = jdbcTemplate.update(DELETE_ACCESS_ROWS);
         log.info("Removed {} rows", numberOfDeletedRows);
     }
 
