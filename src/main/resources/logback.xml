@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>rate-calculator.log</file>
+        <file>access-analyzer.log</file>
+        <append>false</append>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %5p 18737 --- [%t] %-40.40logger{39} : %m%n</pattern>
         </encoder>
     </appender>
 
-    <logger name="com.zopq" level="INFO"
+    <logger name="com.etl.logs.access.analyzer" level="INFO"
             additivity="false">
         <appender-ref ref="FILE" />
     </logger>
