@@ -1,11 +1,14 @@
-package com.etl.logs.access.analyzer.domain;
+package com.etl.logs.access.analyzer.domain.ui;
 
+import com.etl.logs.access.analyzer.domain.Duration;
+import com.etl.logs.access.analyzer.domain.ui.InputParameters;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static com.etl.logs.access.analyzer.domain.InputParameters.*;
+import static com.etl.logs.access.analyzer.domain.ui.InputParameters.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -109,7 +112,7 @@ public class InputParametersTest {
                 .threshold("200")
                 .build();
 
-        assertEquals(Duration.DAILY,inputParameters.getDuration());
+        Assert.assertEquals(Duration.DAILY,inputParameters.getDuration());
         assertEquals(LocalDateTime.of(2017,1,1,13,12,58),inputParameters.getStartDate());
         assertEquals(200,inputParameters.getThreshold());
     }

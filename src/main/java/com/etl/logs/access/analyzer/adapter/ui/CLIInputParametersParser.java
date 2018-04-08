@@ -1,4 +1,4 @@
-package com.etl.logs.access.analyzer.adapter;
+package com.etl.logs.access.analyzer.adapter.ui;
 
 import com.etl.logs.access.analyzer.domain.ui.InputParameters;
 import com.etl.logs.access.analyzer.port.ui.InputParametersParser;

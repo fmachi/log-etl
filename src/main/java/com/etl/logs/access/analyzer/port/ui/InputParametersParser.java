@@ -1,6 +1,6 @@
-package com.etl.logs.access.analyzer.port.parameters;
+package com.etl.logs.access.analyzer.port.ui;
 
-import com.etl.logs.access.analyzer.domain.InputParameters;
+import com.etl.logs.access.analyzer.domain.ui.InputParameters;
 
 import java.util.Optional;
 
