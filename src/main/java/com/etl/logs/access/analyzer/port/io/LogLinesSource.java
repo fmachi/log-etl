@@ -1,4 +1,7 @@
 package com.etl.logs.access.analyzer.port.io;
 
-public class LogLinesSource {
+import java.io.Closeable;
+
+public interface LogLinesSource extends Iterable<String[]>, Closeable {
+
 }

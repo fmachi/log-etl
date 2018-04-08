@@ -1,4 +1,4 @@
-package com.etl.logs.access.analyzer.domain;
+package com.etl.logs.access.analyzer.domain.accesslog;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
