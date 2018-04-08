@@ -27,4 +27,4 @@ docker/mysql_data
 
 target
 
-docs/*.txt
+docs
