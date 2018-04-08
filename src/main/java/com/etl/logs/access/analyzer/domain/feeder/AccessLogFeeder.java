@@ -17,32 +17,31 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
-public class DatabaseFeeder {
+public class AccessLogFeeder {
 
     private final LogLinesSource logLinesSource;
     private final LogAccessRepository logAccessRepository;
+
+    private AtomicInteger readLinesCounter = new AtomicInteger(0);
+    private AtomicInteger writtenRowsCounter = new AtomicInteger(0);
     private final int parallelism;
     private final int bufferSize;
     private final int prefetchSize;
 
-    AtomicInteger read = new AtomicInteger(0);
-    AtomicInteger write = new AtomicInteger(0);
-
-    public DatabaseFeeder(LogLinesSource logLinesSource,
-                          LogAccessRepository logAccessRepository,
-                          int parallelism,
-                          int bufferSize,
-                          int prefetchSize) {
+    public AccessLogFeeder(LogLinesSource logLinesSource,
+                           LogAccessRepository logAccessRepository,
+                           PipelineConfiguration pipelineConfiguration) {
         this.logLinesSource = logLinesSource;
         this.logAccessRepository = logAccessRepository;
-        this.parallelism = parallelism;
-        this.bufferSize = bufferSize;
-        this.prefetchSize = prefetchSize;
+        log.info("Log access feeder will run with pipeline configuration {}",pipelineConfiguration);
+        parallelism = pipelineConfiguration.getParallelism();
+        bufferSize = pipelineConfiguration.getBufferSize();
+        prefetchSize = pipelineConfiguration.getPrefetchSize();
     }
 
     public void feed() {
 
-        logAccessRepository.clearPreviousElaboration();
+        logAccessRepository.cleanPreviousElaboration();
 
         CountDownLatch countDownLatch = new CountDownLatch(parallelism);
 
@@ -57,6 +56,10 @@ public class DatabaseFeeder {
                 .runOn(Schedulers.computation())
                 .subscribe(subscribers);
 
+        awaitForTermination(countDownLatch);
+    }
+
+    private void awaitForTermination(CountDownLatch countDownLatch) {
         try {
             countDownLatch.await();
         } catch (Exception ex) {
@@ -69,7 +72,7 @@ public class DatabaseFeeder {
 
         for (int i = 0; i < parallelism; i++) {
             subscribers[i] = new LambdaSubscriber<>(this::handleBatch,
-                    this::handleError,
+                    handleError(countDownLatch),
                     handleComplete(countDownLatch),
                     FlowableInternalHelper.RequestMax.INSTANCE
             );
@@ -83,7 +86,7 @@ public class DatabaseFeeder {
                 (iterator, emitter) -> {
                     Iterator<String[]> logLinesIterator = logLinesSource.iterator();
                     if (logLinesIterator.hasNext()) {
-                        read.incrementAndGet();
+                        readLinesCounter.incrementAndGet();
                         emitter.onNext(logLinesIterator.next());
                     } else {
                         emitter.onComplete();
@@ -100,15 +103,18 @@ public class DatabaseFeeder {
         };
     }
 
-    private void handleError(Throwable throwable) {
-        log.error("An error occurred publishing batch", throwable);
+    private io.reactivex.functions.Consumer<Throwable> handleError(CountDownLatch countDownLatch) {
+        return throwable -> {
+            log.error("An error occurred publishing batch", throwable);
+            countDownLatch.countDown();
+        };
     }
 
     void handleBatch(List<Access> rows) {
-        write.updateAndGet(a -> a + rows.size());
+        writtenRowsCounter.updateAndGet(a -> a + rows.size());
         long started = System.currentTimeMillis();
         logAccessRepository.insertLogRows(rows);
-        log.info("Writing {} {} in {}", read.get(), write.get(), System.currentTimeMillis() - started);
+        log.info("Writing {} {} in {}", readLinesCounter.get(), writtenRowsCounter.get(), System.currentTimeMillis() - started);
     }
 
     Access extractAccess(String[] tokens) {
@@ -118,7 +124,7 @@ public class DatabaseFeeder {
                 tokens[index++],
                 tokens[index++],
                 tokens[index++],
-                tokens[index++]
+                tokens[index]
         );
     }
 }
