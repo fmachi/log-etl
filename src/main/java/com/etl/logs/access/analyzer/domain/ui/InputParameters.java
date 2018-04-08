@@ -1,5 +1,6 @@
-package com.etl.logs.access.analyzer.domain;
+package com.etl.logs.access.analyzer.domain.ui;
 
+import com.etl.logs.access.analyzer.domain.Duration;
 import lombok.Builder;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -134,5 +135,13 @@ public class InputParameters {
 
     private  boolean isNotPositiveThreshold() {
         return thresholdAsInteger<=0;
+    }
+
+    public LocalDateTime getEndDate() {
+        // TODO avoid nullpointer
+        if(durationAsEnum.isDaily())
+            return startDateAsLocalDateTime.plusDays(1);
+        else
+            return startDateAsLocalDateTime.plusHours(1);
     }
 }
