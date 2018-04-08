@@ -1,0 +1,9 @@
+logging:
+    level:
+        ROOT: INFO
+    file: ratecalculator.log
+
+rate-calculator:
+  engine:
+    years: 3
+    compounding: 12
