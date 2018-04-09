@@ -17,6 +17,7 @@ import com.etl.logs.access.analyzer.port.io.LogLinesSource;
 import com.etl.logs.access.analyzer.port.persistence.accesslog.ExceedingTrafficCriteria;
 import com.etl.logs.access.analyzer.port.persistence.accesslog.LogAccessRepository;
 import com.etl.logs.access.analyzer.port.persistence.blacklisting.BlacklistingRepository;
+import com.etl.logs.access.analyzer.port.ui.ExceedingTrafficIpPrinter;
 import com.etl.logs.access.analyzer.port.ui.InputParametersParser;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -67,8 +68,8 @@ public class ApplicationConfiguration {
     }
 
     @Bean
-    BlacklistChecker blacklistChecker(LogAccessRepository logAccessRepository, BlacklistingRepository blacklistingRepository, Consumer<BlacklistedIp> blacklistedIpPrinter, BiFunction<ExceedingTrafficIp, ExceedingTrafficCriteria, String> messageFormatter) {
-        return new BlacklistChecker(logAccessRepository, blacklistingRepository, blacklistedIpPrinter,messageFormatter);
+    BlacklistChecker blacklistChecker(LogAccessRepository logAccessRepository, BlacklistingRepository blacklistingRepository, ExceedingTrafficIpPrinter blacklistedIpPrinter, BiFunction<ExceedingTrafficIp, ExceedingTrafficCriteria, String> messageFormatter) {
+        return new BlacklistChecker(logAccessRepository, blacklistingRepository, messageFormatter, blacklistedIpPrinter);
     }
 
     @Bean
@@ -92,7 +93,7 @@ public class ApplicationConfiguration {
     }
 
     @Bean
-    BlacklistedIpPrinter blacklistedIpPrinter() {
+    ExceedingTrafficIpPrinter blacklistedIpPrinter() {
         return new BlacklistedIpPrinter(System.out);
     }
 

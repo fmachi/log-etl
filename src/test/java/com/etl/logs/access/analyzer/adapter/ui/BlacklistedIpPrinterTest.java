@@ -40,11 +40,21 @@ public class BlacklistedIpPrinterTest {
                 .numberOfAccess(1)
                 .build();
 
-        blacklistedIpPrinter.accept(blacklistedIp);
+        blacklistedIpPrinter.onBlacklistedIpFound(blacklistedIp);
 
         verify(printStream).println(captor.capture());
 
         assertEquals("Found ip to blacklist BlacklistedIp(ip=192.168.25.4, startDate=2018-04-03T11:12:22, endDate=2018-04-04T11:12:22, numberOfAccess=1, message=message)",captor.getValue());
+
+    }
+
+    @Test
+    public void shouldPrintNoBlacklistedIpFound() {
+        blacklistedIpPrinter.noResult();
+
+        verify(printStream).println(captor.capture());
+
+        assertEquals("No ip to blacklist found for the given criteria.",captor.getValue());
 
     }
 

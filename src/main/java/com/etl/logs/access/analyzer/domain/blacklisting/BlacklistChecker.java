@@ -4,6 +4,7 @@ import com.etl.logs.access.analyzer.domain.ui.InputParameters;
 import com.etl.logs.access.analyzer.port.persistence.accesslog.ExceedingTrafficCriteria;
 import com.etl.logs.access.analyzer.port.persistence.accesslog.LogAccessRepository;
 import com.etl.logs.access.analyzer.port.persistence.blacklisting.BlacklistingRepository;
+import com.etl.logs.access.analyzer.port.ui.ExceedingTrafficIpPrinter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -17,16 +18,16 @@ public class BlacklistChecker {
 
     private final LogAccessRepository logAccessRepository;
     private final BlacklistingRepository blacklistingRepository;
-    private Consumer<BlacklistedIp> blacklistedIpFoundHandler;
     private BiFunction<ExceedingTrafficIp, ExceedingTrafficCriteria, String> messageFormatter;
+    private ExceedingTrafficIpPrinter exceedingTrafficIpPrinter;
 
     public BlacklistChecker(LogAccessRepository logAccessRepository,
                             BlacklistingRepository blacklistingRepository,
-                            Consumer<BlacklistedIp> blacklistedIpFoundHandler,
-                            BiFunction<ExceedingTrafficIp, ExceedingTrafficCriteria, String> messageFormatter) {
+                            BiFunction<ExceedingTrafficIp, ExceedingTrafficCriteria, String> messageFormatter,
+                            ExceedingTrafficIpPrinter exceedingTrafficIpPrinter) {
         this.logAccessRepository = logAccessRepository;
         this.blacklistingRepository = blacklistingRepository;
-        this.blacklistedIpFoundHandler = blacklistedIpFoundHandler;
+        this.exceedingTrafficIpPrinter = exceedingTrafficIpPrinter;
         this.messageFormatter = messageFormatter;
     }
 
@@ -39,14 +40,22 @@ public class BlacklistChecker {
 
         List<ExceedingTrafficIp> ipsToBlacklist = logAccessRepository.findIpsToBlacklist(trafficCriteria);
 
-        log.info("Found {} rows to blacklist",ipsToBlacklist.size());
+        if(!ipsToBlacklist.isEmpty()) {
+            blacklistItems(trafficCriteria, ipsToBlacklist);
+        } else {
+            exceedingTrafficIpPrinter.noResult();
+        }
+    }
+
+    private void blacklistItems(ExceedingTrafficCriteria trafficCriteria, List<ExceedingTrafficIp> ipsToBlacklist) {
+        log.info("Found {} rows to blacklist", ipsToBlacklist.size());
 
         List<BlacklistedIp> blacklistedIpList = ipsToBlacklist.stream().map(
                 ip -> toBlackListedIp(ip, trafficCriteria)
         ).collect(toList());
 
         int numberOfWrittenRows = blacklistingRepository.insertBlacklistedIps(blacklistedIpList);
-        log.info("Number of blacklisted rows persisted is {}",numberOfWrittenRows);
+        log.info("Number of blacklisted rows persisted is {}", numberOfWrittenRows);
     }
 
     private BlacklistedIp toBlackListedIp(ExceedingTrafficIp ipsToBlacklist, ExceedingTrafficCriteria trafficCriteria) {
@@ -58,7 +67,7 @@ public class BlacklistChecker {
                 .message(createMessage(ipsToBlacklist,trafficCriteria))
                 .build();
 
-        blacklistedIpFoundHandler.accept(toBlackList);
+        exceedingTrafficIpPrinter.onBlacklistedIpFound(toBlackList);
 
         return toBlackList;
     }
