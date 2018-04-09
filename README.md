@@ -15,6 +15,13 @@ with the following command:
 
 java -jar ./target/access-analyzer-1.0-SNAPSHOT.jar --startDate=2017-01-01.13:12:29 --duration=hourly --threshold=180
 
+- Solution
+the solution has been split into three different parts
+- 1) cleaning the database
+- 2) log access feeding
+- 3.1)checking whether any ip exceeded the given number of access
+- 3.2) adding ips to blacklist table
+
 - RxJava
 The log access feeder has been writtern with RxJava, I wanted to spend some time in order to check if it could be
 used to run batch insert in parallel supporting backpressure too
