@@ -42,7 +42,7 @@ public class BufferedReaderLogLinesSource implements LogLinesSource {
             public boolean hasNext() {
                 try {
                     line = bufferedReader.readLine();
-                } catch (IOException ex) {
+                } catch (Exception ex) {
                     throw new ReadingLogLinesException("Error reading log line", ex);
                 }
                 return line != null;

@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.Iterator;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BufferedReaderLogLinesSourceTest {
@@ -33,7 +34,6 @@ public class BufferedReaderLogLinesSourceTest {
     @Mock
     private BufferedReader mockedBufferedReader;
 
-
     @Test
     public void shouldThrowExceptionWhenOpeningANotExistingFile() {
         thrown.expect(ReadingLogLinesException.class);
@@ -49,6 +49,18 @@ public class BufferedReaderLogLinesSourceTest {
         bufferedReaderLogLinesSource.close();
 
         Mockito.verify(mockedBufferedReader).close();
+    }
+
+    @Test
+    public void shouldConvertExceptionWhenReadingLines() throws IOException {
+        TestableBufferedReaderLogLinesSource bufferedReaderLogLinesSource = new TestableBufferedReaderLogLinesSource();
+
+        when(mockedBufferedReader.readLine()).thenThrow(IOException.class);
+
+        thrown.expect(ReadingLogLinesException.class);
+        thrown.expectMessage("Error reading log line");
+
+        bufferedReaderLogLinesSource.iterator().hasNext();
     }
 
     @Test
