@@ -28,3 +28,5 @@ docker/mysql_data
 target
 
 docs
+
+*.iml
