@@ -93,7 +93,7 @@ public class ApplicationConfiguration {
 
     @Bean
     BlacklistedIpPrinter blacklistedIpPrinter() {
-        return new BlacklistedIpPrinter();
+        return new BlacklistedIpPrinter(System.out);
     }
 
 
