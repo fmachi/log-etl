@@ -6,6 +6,6 @@ log-etl:
 
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/logdatabase
+    url: jdbc:mysql://localhost:33061/logdatabase
     username: logwriter
     password: logwriter
