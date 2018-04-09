@@ -1,9 +1,11 @@
 package com.etl.logs.access.analyzer.adapter.io;
 
 import com.etl.logs.access.analyzer.port.io.LogLinesSource;
+import com.etl.logs.access.analyzer.port.io.ReadingLogLinesException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Iterator;
@@ -16,12 +18,12 @@ public class BufferedReaderLogLinesSource implements LogLinesSource {
     private final String logEntrySeparator;
     private final BufferedReader bufferedReader;
 
-    public BufferedReaderLogLinesSource(String filePath,String logEntrySeparator) {
+    public BufferedReaderLogLinesSource(String filePath, String logEntrySeparator) {
         this.logEntrySeparator = logEntrySeparator;
         try {
-            bufferedReader = new BufferedReader(new FileReader(filePath));
+            this.bufferedReader = createBufferedReader(filePath);
         } catch (Exception ex) {
-            throw new RuntimeException("An error occurred opening file " + filePath, ex);
+            throw new ReadingLogLinesException("An error occurred opening file <" + filePath + ">.", ex);
         }
     }
 
@@ -41,7 +43,7 @@ public class BufferedReaderLogLinesSource implements LogLinesSource {
                 try {
                     line = bufferedReader.readLine();
                 } catch (IOException ex) {
-                    throw new RuntimeException("Error reading log line", ex);
+                    throw new ReadingLogLinesException("Error reading log line", ex);
                 }
                 return line != null;
             }
@@ -54,4 +56,10 @@ public class BufferedReaderLogLinesSource implements LogLinesSource {
             }
         };
     }
+
+    protected BufferedReader createBufferedReader(String filePath) throws FileNotFoundException {
+        return new BufferedReader(new FileReader(filePath));
+    }
+
+
 }
