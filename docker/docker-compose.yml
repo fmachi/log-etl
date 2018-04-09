@@ -2,7 +2,7 @@ log_database:
   restart: always
   image: mysql:5.7
   ports:
-    - 3306:3306
+    - 33061:3306
   environment:
     MYSQL_DATABASE: logdatabase
     MYSQL_ROOT_PASSWORD: root
@@ -10,3 +10,4 @@ log_database:
     MYSQL_PASSWORD: logwriter
   volumes:
    - ./mysql_data:/var/lib/mysql
+   - ./init-scripts:/docker-entrypoint-initdb.d
