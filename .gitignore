@@ -3,6 +3,7 @@
 
 # Log file
 access-analyzer.log
+access.log
 
 # BlueJ files
 *.ctxt
